@@ -1,7 +1,6 @@
 ﻿namespace Domain.Entities;
 public class Unit
 {
-    public ModuleA ModuleA { get; set; }
-    public ModuleB ModuleB { get; set; }
-    public ModuleC ModuleC { get; set; }
+    public int Id { get; set; }
+    public List<Module> Modules { get; set; }
 }
