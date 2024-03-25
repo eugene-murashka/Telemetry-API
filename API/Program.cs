@@ -47,10 +47,10 @@ app.MapGet("/api/unit", async (IApplicationDbContext context, int id) =>
 .WithOpenApi();
 
 // Добавляется только сущность или можно и все вложенные сущности?
-app.MapPost("/api/unit", (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
+app.MapPost("/api/unit", async (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
 {
     context.Units.Add(newUnit);
-    context.SaveChangesAsync(cancellationToken);
+    await context.SaveChangesAsync(cancellationToken);
 
     return new UnitDto
     {
@@ -70,16 +70,35 @@ app.MapPost("/api/unit", (IApplicationDbContext context, CancellationToken cance
 .WithOpenApi();
 
 // Редактировать таргетную сущность или включая все вложенные?
-app.MapPut("/api/unit", (Unit newUnit) =>
+app.MapPut("/api/unit", (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
 {
     return "updateUnit";
 })
 .WithName("UpdateUnit")
 .WithOpenApi();
 
-app.MapDelete("/api/unit", (int id) =>
+app.MapDelete("/api/unit", async (IApplicationDbContext context, CancellationToken cancellationToken, int id) =>
 {
-    return "deleteUnit";
+    var unitToDelete = await context.Units
+        .FindAsync(new object[] { id }, cancellationToken);
+
+    context.Units.Remove(unitToDelete);
+
+    await context.SaveChangesAsync(cancellationToken);
+
+    return new UnitDto
+    {
+        Id = unitToDelete.Id,
+        Telemetries = unitToDelete.Devices
+            .SelectMany(device => device.Telemetries, (device, telemetry) => new TelemetryDto
+            {
+                Id = telemetry.Id,
+                DeviceType = device.Type,
+                Date = telemetry.Date,
+                Key = telemetry.Key,
+                Value = telemetry.Value,
+            }),
+    };
 })
 .WithName("DeleteUnit")
 .WithOpenApi();
