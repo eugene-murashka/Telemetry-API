@@ -1,24 +1,20 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Infrastructure.Data;
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    public DbSet<Unit> Units { get; set; }
+    public DbSet<Domain.Entities.Device> Devices { get; set; } // Device
+    public DbSet<Telemetry> Telemetries { get; set; }
 
-    public DbSet<Unit> Units { get; set; } = null!;
-    public DbSet<Domain.Entities.Module> Modules { get; set; } = null!;
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        builder.Entity<Domain.Entities.Module>()
-            .HasDiscriminator<string>("Type")
-            .HasValue<ModuleA>("ModuleA")
-            .HasValue<ModuleB>("ModuleB")
-            .HasValue<ModuleC>("ModuleC");
 
         base.OnModelCreating(builder);
     }

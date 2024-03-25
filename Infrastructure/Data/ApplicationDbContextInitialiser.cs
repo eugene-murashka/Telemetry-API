@@ -56,34 +56,202 @@ public class ApplicationDbContextInitialiser
     private async Task TrySeedAsync()
     {
         if (!_context.Units.Any())
-        {
-            _context.Units.Add(new Unit
+        { 
+            var Units = new List<Unit>();
+
+            #region creating testing data
+            var UnitsItems = new List<Unit>
             {
-                Modules = new List<Module>
+                new Unit
                 {
-                    new ModuleA
-                    {
-                        Date = DateTime.Now,
-                        Prop1 = "value1",
-                        Prop2 = "value2",
-                        Prop3 = "value3",
-                    },
-                    new ModuleB
-                    {
-                        Date = DateTime.Now,
-                        Prop4 = "value4",
-                        Prop5 = "value5",
-                        Prop6 = "value6",
-                    },
-                    new ModuleC
-                    {
-                        Date = DateTime.Now,
-                        Prop7 = "value7",
-                        Prop8 = "value8",
-                        Prop9 = "value9",
-                    },
+                    Devices = new List<Device>(),
+                },
+                new Unit
+                {
+                    Devices = new List<Device>(),
                 }
-            });
+            };
+            Units.AddRange(UnitsItems);
+
+            var DeviceItems1 = new List<Device>
+            {
+                new Device
+                {
+                    Type = "0",
+                    Telemetries = new List<Telemetry>(),
+                },
+                new Device
+                {
+                    Type = "1",
+                    Telemetries = new List<Telemetry>(),
+                },
+                new Device
+                {
+                    Type = "2",
+                    Telemetries = new List<Telemetry>(),
+                },
+            };
+            Units[0].Devices.AddRange(DeviceItems1);
+            var DeviceItem2 = new List<Device>
+            {
+                new Device
+                {
+                    Type = "0",
+                    Telemetries = new List<Telemetry>(),
+                },
+                new Device
+                {
+                    Type = "1",
+                    Telemetries = new List<Telemetry>(),
+                },
+                new Device
+                {
+                    Type = "2",
+                    Telemetries = new List<Telemetry>(),
+                },
+            };
+            Units[1].Devices.AddRange(DeviceItem2);
+
+            var TelemetryItems1 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value1",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value2",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value3",
+                },
+            };
+            Units[0].Devices[0].Telemetries.AddRange(TelemetryItems1);
+
+            var TelemetryItems2 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value4",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value5",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value6",
+                },
+            };
+            Units[0].Devices[1].Telemetries.AddRange(TelemetryItems2);
+
+            var TelemetryItems3 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value7",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value8",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value9",
+                },
+            };
+            Units[0].Devices[2].Telemetries.AddRange(TelemetryItems3);
+
+            var TelemetryItems4 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value10",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value20",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value30",
+                },
+            };
+            Units[1].Devices[0].Telemetries.AddRange(TelemetryItems4);
+
+            var TelemetryItems5 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value40",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value50",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value60",
+                },
+            };
+            Units[1].Devices[1].Telemetries.AddRange(TelemetryItems5);
+
+            var TelemetryItems6 = new List<Telemetry>
+            {
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop1",
+                    Value = "value70",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop2",
+                    Value = "value80",
+                },
+                new Telemetry
+                {
+                    Date = DateTime.Now,
+                    Key = "prop3",
+                    Value = "value90",
+                },
+            };
+            Units[1].Devices[2].Telemetries.AddRange(TelemetryItems6);
+            #endregion
+
+            _context.Units.AddRange(Units);
 
             await _context.SaveChangesAsync();
         }

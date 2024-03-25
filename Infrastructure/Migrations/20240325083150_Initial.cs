@@ -24,39 +24,56 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Telemetries",
+                name: "Devices",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UnitId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
-                    Prop1 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop2 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop3 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop4 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop5 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop6 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop7 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop8 = table.Column<string>(type: "TEXT", nullable: true),
-                    Prop9 = table.Column<string>(type: "TEXT", nullable: true)
+                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    UnitId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Telemetries", x => x.Id);
+                    table.PrimaryKey("PK_Devices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Telemetries_Units_UnitId",
+                        name: "FK_Devices_Units_UnitId",
                         column: x => x.UnitId,
                         principalTable: "Units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Telemetries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: false),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Telemetries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Telemetries_Devices_DeviceId",
+                        column: x => x.DeviceId,
+                        principalTable: "Devices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Telemetries_UnitId",
-                table: "Telemetries",
+                name: "IX_Devices_UnitId",
+                table: "Devices",
                 column: "UnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Telemetries_DeviceId",
+                table: "Telemetries",
+                column: "DeviceId");
         }
 
         /// <inheritdoc />
@@ -64,6 +81,9 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Telemetries");
+
+            migrationBuilder.DropTable(
+                name: "Devices");
 
             migrationBuilder.DropTable(
                 name: "Units");

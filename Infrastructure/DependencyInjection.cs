@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Application.Common.Interfaces;
+using Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,7 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "DataSource=app.db;Cache=Shared";
 
         services.AddSqlite<ApplicationDbContext>(connectionString);
-        services.AddScoped<ApplicationDbContext>();
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddScoped<ApplicationDbContextInitialiser>();
 
         return services;
