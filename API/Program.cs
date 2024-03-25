@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,9 +122,21 @@ app.MapGet("/api/telemetry", async (IApplicationDbContext context, int id) =>
 .WithName("GetTelemetry")
 .WithOpenApi();
 
-app.MapPost("/api/telemetry", (Telemetry newTelemetry) =>
+app.MapPost("/api/telemetry", async (IApplicationDbContext context, CancellationToken cancellationToken, Telemetry newTelemetry) =>
 {
-    return "CreateTelemetry";
+    context.Telemetries.Add(newTelemetry);
+    await context.SaveChangesAsync(cancellationToken);
+
+    var device = await context.Devices.FindAsync(new object[] { newTelemetry.DeviceId });
+
+    return new TelemetryDto
+    {
+        Id = newTelemetry.Id,
+        DeviceType = device.Type,
+        Date = newTelemetry.Date,
+        Key = newTelemetry.Key,
+        Value = newTelemetry.Value,
+    };
 })
 .WithName("CreateTelemetry")
 .WithOpenApi();
