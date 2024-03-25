@@ -103,9 +103,20 @@ app.MapDelete("/api/unit", async (IApplicationDbContext context, CancellationTok
 .WithName("DeleteUnit")
 .WithOpenApi();
 
-app.MapGet("/api/telemetry", (int id) =>
+app.MapGet("/api/telemetry", async (IApplicationDbContext context, int id) =>
 {
-    return "getTelemetry";
+    return await context.Telemetries
+        .Where(telemetry => telemetry.Id == id)
+        .Select(telemetry => new TelemetryDto
+        {
+            Id = telemetry.Id,
+            DeviceType = telemetry.Device.Type,
+            Date = telemetry.Date,
+            Key = telemetry.Key,
+            Value = telemetry.Value,
+        })
+        .AsNoTracking()
+        .FirstOrDefaultAsync();
 })
 .WithName("GetTelemetry")
 .WithOpenApi();
