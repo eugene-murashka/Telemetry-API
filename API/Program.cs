@@ -47,9 +47,24 @@ app.MapGet("/api/unit", async (IApplicationDbContext context, int id) =>
 .WithOpenApi();
 
 // Добавляется только сущность или можно и все вложенные сущности?
-app.MapPost("/api/unit", (Unit newUnit) =>
+app.MapPost("/api/unit", (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
 {
-    return "createUnit";
+    context.Units.Add(newUnit);
+    context.SaveChangesAsync(cancellationToken);
+
+    return new UnitDto
+    {
+        Id = newUnit.Id,
+        Telemetries = newUnit.Devices
+            .SelectMany(device => device.Telemetries, (device, telemetry) => new TelemetryDto
+            {
+                Id = telemetry.Id,
+                DeviceType = device.Type,
+                Date = telemetry.Date,
+                Key = telemetry.Key,
+                Value = telemetry.Value,
+            }),
+    };
 })
 .WithName("CreateUnit")
 .WithOpenApi();
