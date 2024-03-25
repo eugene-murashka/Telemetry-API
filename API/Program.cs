@@ -1,8 +1,8 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +47,6 @@ app.MapGet("/api/unit", async (IApplicationDbContext context, int id) =>
 .WithName("GetUnit")
 .WithOpenApi();
 
-// Добавляется только сущность или можно и все вложенные сущности?
 app.MapPost("/api/unit", async (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
 {
     context.Units.Add(newUnit);
@@ -140,7 +139,7 @@ app.MapPut("/api/telemetry", async (IApplicationDbContext context, CancellationT
 
     var device = await context.Devices
         .FindAsync(new object[] { oldTelemetry.DeviceId }, cancellationToken);
-    
+
     oldTelemetry.Date = newTelemetry.Date;
     oldTelemetry.Value = newTelemetry.Value;
 
@@ -207,7 +206,7 @@ app.Run();
 #region Queries structures
 public record GetTelemetriesQuery
 {
-    public string DeviceType { get; init; }
+    public DeviceType DeviceType { get; init; }
     public DateTime DateFrom { get; init; }
     public DateTime DateTo { get; init; }
     public string Status { get; init; }
@@ -218,7 +217,7 @@ public record GetTelemetriesQuery
 public class TelemetryDto
 {
     public int Id { get; set; }
-    public string DeviceType { get; init; }
+    public DeviceType DeviceType { get; init; }
     public DateTime Date { get; init; }
     public string Key { get; init; }
     public string Value { get; init; }

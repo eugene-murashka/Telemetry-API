@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,17 +78,17 @@ public class ApplicationDbContextInitialiser
             {
                 new Device
                 {
-                    Type = "0",
+                    Type = DeviceType.Type1,
                     Telemetries = new List<Telemetry>(),
                 },
                 new Device
                 {
-                    Type = "1",
+                    Type = DeviceType.Type2,
                     Telemetries = new List<Telemetry>(),
                 },
                 new Device
                 {
-                    Type = "2",
+                    Type = DeviceType.Type3,
                     Telemetries = new List<Telemetry>(),
                 },
             };
@@ -96,17 +97,17 @@ public class ApplicationDbContextInitialiser
             {
                 new Device
                 {
-                    Type = "0",
+                    Type = DeviceType.Type1,
                     Telemetries = new List<Telemetry>(),
                 },
                 new Device
                 {
-                    Type = "1",
+                    Type = DeviceType.Type2,
                     Telemetries = new List<Telemetry>(),
                 },
                 new Device
                 {
-                    Type = "2",
+                    Type = DeviceType.Type3,
                     Telemetries = new List<Telemetry>(),
                 },
             };
