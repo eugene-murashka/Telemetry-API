@@ -70,14 +70,6 @@ app.MapPost("/api/unit", async (IApplicationDbContext context, CancellationToken
 .WithName("CreateUnit")
 .WithOpenApi();
 
-// Редактировать таргетную сущность или включая все вложенные?
-app.MapPut("/api/unit", (IApplicationDbContext context, CancellationToken cancellationToken, Unit newUnit) =>
-{
-    return "updateUnit";
-})
-.WithName("UpdateUnit")
-.WithOpenApi();
-
 app.MapDelete("/api/unit", async (IApplicationDbContext context, CancellationToken cancellationToken, int id) =>
 {
     var unitToDelete = await context.Units
@@ -141,23 +133,71 @@ app.MapPost("/api/telemetry", async (IApplicationDbContext context, Cancellation
 .WithName("CreateTelemetry")
 .WithOpenApi();
 
-app.MapPut("/api/telemetry", (Telemetry newTelemetry) =>
+app.MapPut("/api/telemetry", async (IApplicationDbContext context, CancellationToken cancellationToken, Telemetry newTelemetry) =>
 {
-    return "UpdateTelemetry";
+    var oldTelemetry = await context.Telemetries
+        .FindAsync(new object[] { newTelemetry.Id }, cancellationToken);
+
+    var device = await context.Devices
+        .FindAsync(new object[] { oldTelemetry.DeviceId }, cancellationToken);
+    
+    oldTelemetry.Date = newTelemetry.Date;
+    oldTelemetry.Value = newTelemetry.Value;
+
+    context.SaveChangesAsync(cancellationToken);
+
+    return new TelemetryDto
+    {
+        Id = oldTelemetry.Id,
+        DeviceType = device.Type,
+        Date = oldTelemetry.Date,
+        Key = oldTelemetry.Key,
+        Value = oldTelemetry.Value,
+    };
 })
 .WithName("UpdateTelemetry")
 .WithOpenApi();
 
-app.MapDelete("/api/telemetry", (int id) =>
+app.MapDelete("/api/telemetry", async (IApplicationDbContext context, CancellationToken cancellationToken, int id) =>
 {
-    return "DeleteTelemetry";
+    var telemetryToDelete = await context.Telemetries
+        .FindAsync(new object[] { id }, cancellationToken);
+
+    var device = await context.Devices
+        .FindAsync(new object[] { telemetryToDelete.DeviceId }, cancellationToken);
+
+    context.Telemetries.Remove(telemetryToDelete);
+
+    await context.SaveChangesAsync(cancellationToken);
+
+    return new TelemetryDto
+    {
+        Id = telemetryToDelete.Id,
+        DeviceType = device.Type,
+        Date = telemetryToDelete.Date,
+        Key = telemetryToDelete.Key,
+        Value = telemetryToDelete.Value,
+    };
 })
 .WithName("DeleteTelemetry")
 .WithOpenApi();
 
-app.MapGet("/api/telemetries", ([AsParameters] GetTelemetriesQuery query) =>
+app.MapGet("/api/telemetries", async (IApplicationDbContext context, CancellationToken cancellationToken, [AsParameters] GetTelemetriesQuery query) =>
 {
-    return "GetTelemetries";
+    return await context.Telemetries
+        .Where(telemetry => telemetry.Device.Type == query.DeviceType)
+        .Where(telemetry => telemetry.Date >= query.DateFrom && telemetry.Date <= query.DateTo)
+        .Where(telemetry => telemetry.Key == query.Status)
+        .Select(telemetry => new TelemetryDto
+        {
+            Id = telemetry.Id,
+            DeviceType = telemetry.Device.Type,
+            Date = telemetry.Date,
+            Key = telemetry.Key,
+            Value = telemetry.Value,
+        })
+        .AsNoTracking()
+        .ToListAsync();
 })
 .WithName("GetTelemetries")
 .WithOpenApi();
